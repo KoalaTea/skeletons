@@ -1,0 +1,1 @@
+go build -v -o ./build/server ./server && ./build/server
