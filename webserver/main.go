@@ -7,7 +7,7 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/koalatea/authserver/server/ent/runtime"
+	_ "github.com/koalatea/go-project-skeleton/ent/runtime"
 
 	_ "github.com/mattn/go-sqlite3"
 	"go.opentelemetry.io/otel"
@@ -18,7 +18,7 @@ import (
 	"go.opentelemetry.io/otel/exporters/stdout/stdouttrace"
 )
 
-var tracer = otel.Tracer("authserver")
+var tracer = otel.Tracer("examplewebserver")
 
 func newExporter(w io.Writer) (sdktrace.SpanExporter, error) {
 	return stdouttrace.New(
@@ -36,7 +36,7 @@ func newTraceProvider(exp sdktrace.SpanExporter) *sdktrace.TracerProvider {
 		resource.Default(),
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String("authserver"),
+			semconv.ServiceNameKey.String("examplewebserver"),
 		),
 	)
 
@@ -67,7 +67,7 @@ func main() {
 	tp := newTraceProvider(exp)
 	defer func() { _ = tp.Shutdown(ctx) }()
 	otel.SetTracerProvider(tp)
-	// tracer = tp.Tracer("authserver")
+	// tracer = tp.Tracer("exampleserver")
 
 	server := newServer(ctx)
 	fmt.Println("starting server")
