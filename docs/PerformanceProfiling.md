@@ -20,3 +20,4 @@ apt install -y graphviz
 4. A graph visualization of the requested performance profile should now be saved locally, take a look and see what’s going on.
 
 ## rust
+cargo bench --bench fibonacci_bench --profile-time 12345

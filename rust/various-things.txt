@@ -1,0 +1,217 @@
+#[cfg(debug_assertions)]
+fn run_application_code() {
+    // Instrumentation code for debug mode
+    pprof::mark("start");
+    application_code();
+    pprof::mark("end");
+}
+
+#[cfg(not(debug_assertions))]
+fn run_application_code() {
+    // No instrumentation in release mode
+    application_code();
+}
+
+fn application_code() {
+    // Your application code
+    println!("Running application code...");
+}
+
+fn main() {
+    run_application_code();
+}
+
+
+
+
+use pprof::protos::Message;
+use std::fs::File;
+
+fn main() {
+    // Instrument your code with markers
+    pprof::mark("start");
+
+    // Code to profile
+    let result = expensive_computation();
+
+    // Instrument your code with markers
+    pprof::mark("end");
+
+    // Save profiling data to a file
+    if let Ok(report) = pprof::ProfilerGuard::new(100).unwrap().report().build() {
+        let mut file = File::create("profile.pb").unwrap();
+        let _ = report.encode(&mut file);
+    }
+
+    // Use the result of the computation
+    println!("Result: {}", result);
+}
+
+fn expensive_computation() -> u64 {
+    // Code to profile
+    let mut result = 0;
+    for i in 0..1_000_000 {
+        result += i;
+    }
+    result
+}
+
+
+
+
+use std::fs::File;
+use pprof::ProfilerGuard;
+
+fn main() {
+    // Run your Rust application with the necessary profiling options enabled
+    // For example:
+    // RUSTFLAGS='-Zinstrument-coverage' cargo run
+
+    // Instrument your code to capture heap information
+    // For example:
+    // pprof::mark("start");
+
+    // Code to profile
+    let result = expensive_computation();
+
+    // Instrument your code to capture heap information
+    // For example:
+    // pprof::mark("end");
+
+    // Capture the profile data
+    if let Ok(report) = ProfilerGuard::new(100).unwrap().report().build() {
+        let mut file = File::create("profile.pb").unwrap();
+        let _ = report.encode(&mut file);
+    }
+
+    // Analyze the profile data using the pprof tool
+    // For example:
+    // go tool pprof -http=:8080 profile.pb
+    // This command will start a web server where you can interactively analyze the profile data
+}
+
+fn expensive_computation() -> u64 {
+    // Code to profile
+    let mut result = 0;
+    for i in 0..1_000_000 {
+        result += i;
+    }
+    result
+}
+
+
+
+
+fn main() {
+    #[cfg(debug_assertions)]
+    {
+        // Instrumentation code for debug mode
+        println!("Instrumentation active in debug mode!");
+        // Example: pprof::mark("debug_mode_only");
+    }
+
+    // Your main application code here
+    // This part will be present regardless of the build mode
+
+    println!("Main application logic");
+    // Example: expensive_computation();
+}
+
+
+
+#[cfg(debug_assertions)]
+#[global_allocator]
+static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
+fn main() {
+    #[cfg(debug_assertions)]
+    {
+        // Enable heap profiling by setting the appropriate environment variables
+        std::env::set_var("MALLOC_CONF", "prof:true,prof_active:false,prof_prefix:jeprof.out");
+
+        // Ensure profiling is activated at the start
+        unsafe {
+            jemallocator::malloc_ctl::write("prof.active", true).unwrap();
+        }
+    }
+
+    // Simulate some workload
+    let handle = std::thread::spawn(|| {
+        let mut vec = Vec::new();
+        for i in 0..1_000_000 {
+            vec.push(i);
+        }
+        println!("Vec size: {}", vec.len());
+    });
+
+    handle.join().unwrap();
+
+    #[cfg(debug_assertions)]
+    {
+        // Dump the heap profile
+        unsafe {
+            jemallocator::malloc_ctl::write("prof.dump", "end_of_main").unwrap();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+#[cfg(debug_assertions)]
+#[global_allocator]
+static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+
+#[cfg(debug_assertions)]
+use pprof::ProfilerGuard;
+
+fn main() {
+    #[cfg(debug_assertions)]
+    {
+        // Enable heap profiling by setting the appropriate environment variables
+        std::env::set_var("MALLOC_CONF", "prof:true,prof_active:false,prof_prefix:jeprof.out");
+
+        // Start the CPU profiler
+        let guard = ProfilerGuard::new(100).unwrap();
+
+        // Ensure heap profiling is activated at the start
+        unsafe {
+            jemallocator::malloc_ctl::write("prof.active", true).unwrap();
+        }
+    }
+
+    // Simulate some workload
+    let handle = std::thread::spawn(|| {
+        let mut vec = Vec::new();
+        for i in 0..1_000_000 {
+            vec.push(i);
+        }
+        println!("Vec size: {}", vec.len());
+    });
+
+    handle.join().unwrap();
+
+    #[cfg(debug_assertions)]
+    {
+        // Dump the heap profile
+        unsafe {
+            jemallocator::malloc_ctl::write("prof.dump", "end_of_main").unwrap();
+        }
+
+        // Generate the CPU profiling report
+        if let Ok(report) = guard.report().build() {
+            let mut file = std::fs::File::create("cpu_profile.pb").unwrap();
+            let profile = report.pprof().unwrap();
+            let mut content = Vec::new();
+            profile.write_to_vec(&mut content).unwrap();
+            file.write_all(&content).unwrap();
+        }
+    }
+}
+
+https://www.worthe-it.co.za/blog/2021-06-19-rust-performance-optimization-tools.html

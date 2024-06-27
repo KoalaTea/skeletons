@@ -1,0 +1,4 @@
+- Add authentication to the webserver
+- Add frontend to the webserver
+- jaeger for viewing otel traces
+- rust project
