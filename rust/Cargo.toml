@@ -1,0 +1,18 @@
+[package]
+name = "rust"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rust"
+path = "src/lib/lib.rs"
+
+[dependencies]
+
+[dev-dependencies]
+criterion = "0.5.1"
+pprof = { version = "0.13", features = ["flamegraph", "criterion"] }
+
+[[bench]]
+name = "fibonacci_benchmark"
+harness = false

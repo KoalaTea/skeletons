@@ -5,6 +5,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"fmt"
+	"log"
 	"net/http"
 
 	"entgo.io/contrib/entgql"
@@ -89,6 +90,19 @@ func (srv *Server) Run(ctx context.Context) error {
 	router.Handle("/oauth/login", oauthclient.NewOAuthLoginHandler(oauth, privKey))
 	router.Handle("/oauth/authorize", oauthclient.NewOAuthAuthorizationHandler(oauth, pubKey, graph, "https://www.googleapis.com/oauth2/v3/userinfo"))
 
+	// If performance profiling has been enabled, register the profiling routes
+	if cfg.PProfEnabled {
+		log.Printf("[WARN] Performance profiling is enabled, do not use in production as this may leak sensitive information")
+		registerProfiler(router)
+	}
+	// run the Metric server and the authserver
+	metricsHTTP := newMetricsServer()
+	go func() {
+		log.Printf("Metrics HTTP Server started on %s", metricsHTTP.Addr)
+		if err := metricsHTTP.ListenAndServe(); err != nil {
+			log.Printf("[WARN] stopped metrics http server: %v", err)
+		}
+	}()
 	if err := http.ListenAndServe("0.0.0.0:8080", router); err != nil {
 		return err
 	}

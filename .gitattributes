@@ -1,0 +1,19 @@
+webserver/go.mod linguist-generated=true
+webserver/go.sum linguist-generated=true
+webserver/ent/*.go linguist-generated=true
+webserver/ent/enttest/*.go linguist-generated=true
+webserver/ent/hook/*.go linguist-generated=true
+webserver/ent/migrate/*.go linguist-generated=true
+webserver/ent/predicate/*.go linguist-generated=true
+webserver/ent/privacy/*.go linguist-generated=true
+webserver/ent/runtime/*.go linguist-generated=true
+webserver/ent/**/where.go linguist-generated=true
+webserver/graphql/generated/**generated.go linguist-generated=true
+webserver/graphql/models/gqlgen_models.go linguist-generated=true
+webserver/graphql/schema/ent.graphql linguist-generated=true
+webserver/graphql/schema.graphql linguist-generated=true
+webserver/internal/www/schema.graphql linguist-generated=true
+webserver/internal/www/build/** linguist-generated=true
+
+rust/cargo.lock linguist-generated=true
+rust/cargo.toml linguist-generated=true
