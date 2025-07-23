@@ -4,6 +4,9 @@ entgo connected to graphql for accessing ent within the actual queries and mutat
 opentelemetry for tracing through the server and through the sql queries to traces.txt
 graphql playground
 oauth to google
+prometheus metrics
+auth with bypass auth
+basic config from file
 
 # important files for graphql and ent connection
 webserver/generate.go
