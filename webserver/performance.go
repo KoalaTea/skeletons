@@ -1,11 +1,12 @@
 package main
 
 import (
-	"net/http"
 	"net/http/pprof"
+
+	internalHttp "github.com/koalatea/go-project-skeleton/internal/http"
 )
 
-func registerProfiler(router *http.ServeMux) {
+func registerProfiler(router internalHttp.RouteMap) {
 	router.HandleFunc("/debug/pprof/", pprof.Index)
 	router.HandleFunc("/debug/pprof/cmdline", pprof.Cmdline)
 	router.HandleFunc("/debug/pprof/profile", pprof.Profile)

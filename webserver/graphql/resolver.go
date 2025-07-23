@@ -11,7 +11,7 @@ import (
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
-var tracer = otel.Tracer("authserver/graphql")
+var tracer = otel.Tracer("server/graphql")
 
 type Resolver struct {
 	client *ent.Client
