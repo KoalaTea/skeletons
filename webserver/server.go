@@ -5,8 +5,10 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 	"fmt"
+	"log"
 	"log/slog"
 	"net/http"
+	"os"
 
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent/dialect"
@@ -19,6 +21,7 @@ import (
 	"github.com/koalatea/go-project-skeleton/ent/migrate"
 	"github.com/koalatea/go-project-skeleton/graphql"
 	internalHttp "github.com/koalatea/go-project-skeleton/internal/http"
+	"github.com/koalatea/go-project-skeleton/internal/www"
 	"github.com/koalatea/go-project-skeleton/oauthclient"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -105,7 +108,7 @@ func (srv *Server) Run(ctx context.Context) error {
 	server.Use(entgql.Transactioner{TxOpener: graph})
 	server.Use(&debug.Tracer{})
 
-	// httpLogger := log.New(os.Stderr, "[HTTP] ", log.Flags())
+	httpLogger := log.New(os.Stderr, "[HTTP] ", log.Flags())
 	routes := internalHttp.RouteMap{
 		"/graphql/playground": internalHttp.Endpoint{
 			Handler:              playground.Handler("playground", "/graphql"),
@@ -122,10 +125,10 @@ func (srv *Server) Run(ctx context.Context) error {
 			Handler:              oauthclient.NewOAuthAuthorizationHandler(oauth, pubKey, graph, "https://www.googleapis.com/oauth2/v3/userinfo"),
 			AllowUnauthenticated: true,
 		},
-		// // trailing slash is required to work with react
-		// "/www/": internalHttp.Endpoint{
-		// 	Handler: www.NewHandler(httpLogger),
-		// },
+		// trailing slash is required to work with react
+		"/": internalHttp.Endpoint{
+			Handler: www.NewHandler(httpLogger),
+		},
 	}
 
 	// If performance profiling has been enabled, register the profiling routes

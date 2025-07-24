@@ -3,6 +3,8 @@ ent and graphql are their own packages so they need to be made independently bef
 
 createnv.sh will bootstrap create all the autogen code
 
+this is nice if you want to start without anything genned
+
 # packages I find useful if starting from scratch again to get versioning right
 entgo
 gqlgen

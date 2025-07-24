@@ -7,6 +7,7 @@ oauth to google
 prometheus metrics
 auth with bypass auth
 basic config from file
+www
 
 # important files for graphql and ent connection
 webserver/generate.go
